@@ -6,32 +6,31 @@
 using std::sqrt;
 
 class Vec3 {
-private:
-	double m_coords[3];
-
 public:
-	Vec3() : m_coords{ 0, 0, 0 } {}
-	Vec3(double x, double y, double z) : m_coords{ x, y, z } {}
+	double coords[3];
 
-	double x() const { return m_coords[0]; }
-	double y() const { return m_coords[1]; }
-	double z() const { return m_coords[2]; }
+	Vec3() : coords{ 0, 0, 0 } {}
+	Vec3(double x, double y, double z) : coords{ x, y, z } {}
 
-	Vec3 operator-() const { return { -m_coords[0], -m_coords[1], -m_coords[2] }; }
-	double operator[](int i) const { return m_coords[i]; }
-	double& operator[](int i) { return m_coords[i]; }
+	double x() const { return coords[0]; }
+	double y() const { return coords[1]; }
+	double z() const { return coords[2]; }
+
+	Vec3 operator-() const { return { -coords[0], -coords[1], -coords[2] }; }
+	double operator[](int i) const { return coords[i]; }
+	double& operator[](int i) { return coords[i]; }
 
 	Vec3& operator+=(const Vec3& v) {
-		m_coords[0] += v.m_coords[0];
-		m_coords[1] += v.m_coords[1];
-		m_coords[2] += v.m_coords[2];
+		coords[0] += v.coords[0];
+		coords[1] += v.coords[1];
+		coords[2] += v.coords[2];
 		return *this;
 	}
 
 	Vec3& operator*=(double n) {
-		m_coords[0] *= n;
-		m_coords[1] *= n;
-		m_coords[2] *= n;
+		coords[0] *= n;
+		coords[1] *= n;
+		coords[2] *= n;
 		return *this;
 	}
 
@@ -40,7 +39,7 @@ public:
 	}
 
 	double length_squared() const {
-		return m_coords[0] * m_coords[0] + m_coords[1] * m_coords[1] + m_coords[2] * m_coords[2];
+		return coords[0] * coords[0] + coords[1] * coords[1] + coords[2] * coords[2];
 	}
 
 	double length() const {
@@ -48,6 +47,7 @@ public:
 	}
 };
 
+// Type aliasing for distinction between 3D Point and Color
 
 using Point3 = Vec3;
 
@@ -55,7 +55,45 @@ using Point3 = Vec3;
 // Vector Utility Functions	
 
 inline std::ostream& operator<<(std::ostream& out, const Vec3& v) {
-	return out << v.x() << ' ' << v.y() << ' ' << v.z();
+	return out << v.coords[0] << ' ' << v.coords[1] << ' ' << v.coords[2];
 }
 
-//continue here...
+inline Vec3 operator+(const Vec3& u, const Vec3& v) {
+	return { u.coords[0] + v.coords[0], u.coords[1] + v.coords[1], u.coords[2] + v.coords[2] };
+}
+
+inline Vec3 operator-(const Vec3& u, const Vec3& v) {
+	return { u.coords[0] - v.coords[0], u.coords[1] - v.coords[1], u.coords[2] - v.coords[2] };
+}
+
+inline Vec3 operator*(const Vec3& u, const Vec3& v) {
+	return { u.coords[0] * v.coords[0], u.coords[1] * v.coords[1], u.coords[2] * v.coords[2] };
+}
+
+inline Vec3 operator*(const Vec3& u, double t) {
+	return { u.coords[0] * t, u.coords[1] * t, u.coords[2] * t };
+}
+
+inline Vec3 operator*(double t, const Vec3& u) {
+	return u * t;
+}
+
+inline Vec3 operator/(const Vec3& u, double t) {
+	return (1/t) * u;
+}
+
+inline double dot(const Vec3& u, const Vec3& v) {
+	return u.coords[0] * v.coords[0]
+		 + u.coords[1] * v.coords[1]
+		 + u.coords[2] * v.coords[2];
+}
+
+inline Vec3 cross(const Vec3& u, const Vec3& v) {
+	return { u.coords[1] * v.coords[2] - u.coords[2] * v.coords[1]
+			,u.coords[2] * v.coords[0] - u.coords[0] * v.coords[2]
+			,u.coords[0] * v.coords[1] - u.coords[1] * v.coords[0] };
+}
+
+inline Vec3 unit_vector(const Vec3& v) {
+	return v / v.length();
+}
