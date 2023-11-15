@@ -131,14 +131,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="RayTracer.cpp" />
+    <ClCompile Include="hittable_list.h" />
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Color.h" />
-    <ClInclude Include="Hittable.h" />
-    <ClInclude Include="Ray.h" />
-    <ClInclude Include="Sphere.h" />
-    <ClInclude Include="Vec3.h" />
+    <ClInclude Include="camera.h" />
+    <ClInclude Include="color.h" />
+    <ClInclude Include="hittable.h" />
+    <ClInclude Include="interval.h" />
+    <ClInclude Include="ray.h" />
+    <ClInclude Include="rt_helper.h" />
+    <ClInclude Include="sphere.h" />
+    <ClInclude Include="vec3.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

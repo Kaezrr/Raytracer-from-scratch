@@ -1,7 +1,7 @@
 #pragma once
 
 #include <iostream>
-#include "Vec3.h"
+#include "vec3.h"
 
 // Type aliasing for distinction between 3D Point and Color
 
