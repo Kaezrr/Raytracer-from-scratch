@@ -9,24 +9,25 @@
 
 class Camera {
 public:
-	double	aspect_ratio{ 1.0 };
-	int		image_width{ 100 };
+	double aspect_ratio{ 1.0 };
+	int	image_width{ 100 };
+	int samples_per_pixel{ 10 };
 
 	void render(const Hittable& world, std::ostream& file_out=std::cout) {
 		initialize();
-
 		file_out << "P3\n" << image_width << ' ' << image_height << "\n255\n";
 
-		for (int i{ 0 }; i < image_height; ++i) {
-			std::clog << "\rScanlines remaining: " << image_height - i << ' ' << std::flush;
+		for (int j{ 0 }; j < image_height; ++j) {
+			std::clog << "\rScanlines remaining: " << image_height - j << ' ' << std::flush;
 
-			for (int j{ 0 }; j < image_width; ++j) {
-				auto pixel_center{ pixel00_loc + (i * pixel_delta_ver) + (j * pixel_delta_hor) };
-				auto ray_direction{ pixel_center - camera_center };
-				Ray ray{ camera_center, ray_direction };
+			for (int i{ 0 }; i < image_width; ++i) {
+				Color pixel_color{ 0, 0, 0 };
 
-				Color pixel_color{ ray_color(ray, world) };
-				write_color(file_out, pixel_color);
+				for (int sample{ 0 }; sample < samples_per_pixel; ++sample) {
+					Ray r{ get_ray(i, j) };
+					pixel_color += ray_color(r, world);
+				}
+				write_color(file_out, pixel_color, samples_per_pixel);
 			}
 		}
 
@@ -41,9 +42,6 @@ private:
 	Vec3	pixel_delta_ver{};	// Offset to pixel below
 
 	void initialize() {
-
-		// Calculate Image height and ensure it's at least 1
-
 		image_height = static_cast<int>(image_width / aspect_ratio);
 		image_height = (image_height < 1) ? 1 : image_height;
 
@@ -65,6 +63,26 @@ private:
 		// Calculate location of upper left pixel
 		auto viewport_upper_left{ camera_center - Vec3{0,0,focal_length} - viewport_horizontal / 2 - viewport_vertical / 2 };
 		pixel00_loc = viewport_upper_left + 0.5 * (pixel_delta_hor + pixel_delta_ver);
+	}
+
+	Ray get_ray(int i, int j) const {
+		// Get a randomly sampled camera ray for the pixel at location i, j.
+		auto pixel_center{ pixel00_loc + (i * pixel_delta_hor) + (j * pixel_delta_ver) };
+		auto pixel_sample{ pixel_center + pixel_sample_square() };
+
+		auto ray_origin{ camera_center };
+		auto ray_direction{ pixel_sample - ray_origin };
+
+		return Ray{ ray_origin, ray_direction };
+			
+	}
+
+	Point3 pixel_sample_square() const {
+		// Returns a random point in the square surrounding the pixel at the origin.
+		auto px{ -0.5 + random_double() };
+		auto py{ -0.5 + random_double() };
+
+		return (px * pixel_delta_hor) + (py * pixel_delta_ver);
 	}
 
 	Color ray_color(const Ray& r, const Hittable& world) const {
