@@ -3,9 +3,10 @@
 #include "camera.h"
 #include "hittable_list.h"
 #include "sphere.h"
+#include "timer.h"
 
-#include<iostream>
 #include<fstream>
+#include<iostream>
 
 
 int main() {
@@ -24,8 +25,15 @@ int main() {
 	cam.aspect_ratio		= 16.0 / 9.0;
 	cam.image_width			= 400;
 	cam.samples_per_pixel	= 100;
+	cam.max_depth			= 50;
+
+	// Calculating the render time.
+
+	Timer t;
 
 	cam.render(world, file_out);
+
+	std::cout << "\nTime taken: " << t.elapsed() << " seconds\n";
 
 	return 0;
 }

@@ -9,9 +9,10 @@
 
 class Camera {
 public:
-	double aspect_ratio{ 1.0 };
-	int	image_width{ 100 };
-	int samples_per_pixel{ 10 };
+	double	aspect_ratio		{ 1.0 };	// Ratio of image width over image height
+	int		image_width			{ 100 };	// Rendered image width in pixel count
+	int		samples_per_pixel	{ 10 };		// Count of random samples for each pixel
+	int		max_depth			{ 10 };		// Maximum number of ray bounces in the scene
 
 	void render(const Hittable& world, std::ostream& file_out=std::cout) {
 		initialize();
@@ -25,7 +26,7 @@ public:
 
 				for (int sample{ 0 }; sample < samples_per_pixel; ++sample) {
 					Ray r{ get_ray(i, j) };
-					pixel_color += ray_color(r, world);
+					pixel_color += ray_color(r, max_depth, world);
 				}
 				write_color(file_out, pixel_color, samples_per_pixel);
 			}
@@ -35,11 +36,11 @@ public:
 	}
 
 private:
-	int		image_height{};		// Rendered image height
-	Point3	camera_center{};	// Camera center
-	Point3	pixel00_loc{};		// Location of pixel 0, 0
-	Vec3	pixel_delta_hor{};	// Offset to pixel to the right
-	Vec3	pixel_delta_ver{};	// Offset to pixel below
+	int		image_height	{};		// Rendered image height
+	Point3	camera_center	{};		// Camera center
+	Point3	pixel00_loc		{};		// Location of pixel 0, 0
+	Vec3	pixel_delta_hor	{};		// Offset to pixel to the right
+	Vec3	pixel_delta_ver	{};		// Offset to pixel below
 
 	void initialize() {
 		image_height = static_cast<int>(image_width / aspect_ratio);
@@ -85,11 +86,17 @@ private:
 		return (px * pixel_delta_hor) + (py * pixel_delta_ver);
 	}
 
-	Color ray_color(const Ray& r, const Hittable& world) const {
+	Color ray_color(const Ray& r, int depth, const Hittable& world) const {
 		Hit_record rec{};
 
-		if (world.hit(r, Interval{ 0, infinity }, rec)) {
-			return 0.5 * (rec.normal + Color{ 1, 1, 1 });
+		// Return black color if maximum recursion depth reached.
+		if (depth <= 0)
+			return Color{ 0,0,0 };
+
+		// Minimum time set to 0.001 to prevent shadow acne.
+		if (world.hit(r, Interval{ 0.001, infinity }, rec)) {
+			Vec3 direction{ random_unit_vector() + rec.normal };
+			return 0.5 * ray_color(Ray{ rec.p, direction }, depth-1, world);
 		}
 
 		Vec3 unit_direction{ unit_vector(r.direction()) };
