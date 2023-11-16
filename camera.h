@@ -3,6 +3,7 @@
 #include "rt_helper.h"
 #include "hittable.h"
 #include "color.h"
+#include "material.h"
 
 #include <iostream>
 
@@ -89,14 +90,18 @@ private:
 	Color ray_color(const Ray& r, int depth, const Hittable& world) const {
 		Hit_record rec{};
 
-		// Return black color if maximum recursion depth reached.
+		// We have reached maximum ray bounce limit, not more light gathered.
 		if (depth <= 0)
 			return Color{ 0,0,0 };
 
 		// Minimum time set to 0.001 to prevent shadow acne.
 		if (world.hit(r, Interval{ 0.001, infinity }, rec)) {
-			Vec3 direction{ random_unit_vector() + rec.normal };
-			return 0.5 * ray_color(Ray{ rec.p, direction }, depth-1, world);
+			Ray scattered{};
+			Color attenuetion{};
+			if (rec.mat->scatter(r, rec, attenuetion, scattered))
+				return attenuetion * ray_color(scattered, depth - 1, world);
+
+			return Color{ 0, 0, 0 };
 		}
 
 		Vec3 unit_direction{ unit_vector(r.direction()) };

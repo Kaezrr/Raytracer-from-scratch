@@ -44,6 +44,11 @@ public:
 		return coords[0] * coords[0] + coords[1] * coords[1] + coords[2] * coords[2];
 	}
 
+	bool near_zero() const {
+		auto s{ 1e-8 };
+		return (fabs(coords[0]) < s) && (fabs(coords[1]) < s) && (fabs(coords[2]) < s);
+	}
+
 	double length() const {
 		return sqrt(length_squared());
 	}
@@ -126,4 +131,8 @@ inline Vec3 random_on_hemisphere(const Vec3& normal) {
 		return on_unit_sphere;
 	else
 		return -on_unit_sphere;
+}
+
+inline Vec3 reflect(const Vec3& v, const Vec3& n) {
+	return v - 2*dot(v, n)*n;
 }

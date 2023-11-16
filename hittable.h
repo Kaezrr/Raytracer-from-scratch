@@ -1,13 +1,14 @@
 #pragma once
 
-#include "ray.h"
-#include "interval.h"
+#include "rt_helper.h"
 
+class Material;
 
 class Hit_record {
 public:
 	Point3 p{};
 	Vec3 normal{};
+	shared_ptr<Material> mat{};
 	double t{};
 	bool front_face{};
 
