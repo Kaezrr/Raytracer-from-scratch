@@ -1,3 +1,5 @@
-# Ray Tracer in One Weekend
+# Ray Tracer from scratch.
+A simple brute force path tracer made in c++. No external libraries or APIs used.
 
-Learning to make a simple ray tracer in c++
+### A 1080p sample that took 2 hours to render:
+
