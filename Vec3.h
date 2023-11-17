@@ -113,6 +113,14 @@ inline Vec3 unit_vector(const Vec3& v) {
 	return v / v.length();
 }
 
+inline Vec3 random_in_unit_disc() {
+	while (true) {
+		Vec3 p{ random_double(), random_double(), 0 };
+		if (p.length_squared() < 1)
+			return p;
+	}
+}
+
 inline Vec3 random_on_unit_sphere() {
 	while (true) {
 		auto p{ Vec3::random(-1, 1) };
